@@ -117,3 +117,39 @@ app.*.symbols
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
+
+# =========================================================================
+# IDEs and Editors Configs
+# =========================================================================
+
+# JetBrains (Android Studio, IntelliJ IDEA)
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Visual Studio Code & Cursor (Cursor usa la misma carpeta .vscode)
+.vscode/
+.vscode-test/
+*.code-workspace
+
+# Xcode (iOS / macOS local settings)
+**/ios/.bundle/
+**/ios/vendor/bundle/
+**/.DS_Store
+**/ios/**/project.xcworkspace/xcuserdata/
+**/ios/**/xcshareddata/WorkspaceSettings.xcsettings
+**/ios/**/xcuserdata/
+
+# Local Environment / Secrets
+.env
+.env.local
+.env.*.local
+
+# Operating System Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
