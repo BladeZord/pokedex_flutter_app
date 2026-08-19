@@ -1,45 +1,47 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:pokedex_flutter_app/exception/api_exception.dart';
+import 'package:pokedex_flutter_app/helpers/http_helper.dart';
 import '../models/pokemon_model.dart';
 
 class PokemonService {
   static const String _baseUrl = 'https://pokeapi.co/api/v2';
 
-  /// Obtiene la lista de nombres de Pokémon (primera generación / cantidad limitada)
+  /// Obtiene la lista de nombres de Pokémon
   Future<List<String>> obtenerListaNombres({int limit = 30}) async {
-    final url = Uri.parse('$_baseUrl/pokemon?limit=$limit');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
+    try {
+      final response = await HttpHelper.get('$_baseUrl/pokemon?limit=$limit');
       final data = jsonDecode(response.body);
       final List resultados = data['results'];
+
       return resultados.map<String>((p) => p['name'] as String).toList();
-    } else {
-      throw Exception('Error al obtener la lista: ${response.statusCode}');
+    } on NetworkException {
+      rethrow; // Pasa la excepción de red para ser capturada en la UI
+    } on ApiException {
+      rethrow; // Pasa la excepción de la API para ser capturada en la UI
     }
   }
 
   /// Obtiene el detalle completo de un Pokémon por nombre
   Future<PokemonModel> obtenerDetallePokemon(String name) async {
-    final url = Uri.parse('$_baseUrl/pokemon/$name');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
+    try {
+      final response = await HttpHelper.get('$_baseUrl/pokemon/$name');
       final data = jsonDecode(response.body);
+
       return PokemonModel.fromJson(data);
-    } else {
-      throw Exception('Error al obtener el Pokémon: ${response.statusCode}');
+    } on NetworkException {
+      rethrow;
+    } on ApiException {
+      rethrow;
     }
   }
 
-  /// Opcional: descripción tipo Pokédex desde pokemon-species
+  /// Descripción tipo Pokédex desde pokemon-species
   Future<String> obtenerDescripcion(String name) async {
-    final url = Uri.parse('$_baseUrl/pokemon-species/$name');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
+    try {
+      final response = await HttpHelper.get('$_baseUrl/pokemon-species/$name');
       final data = jsonDecode(response.body);
       final List entries = data['flavor_text_entries'];
+
       final entryEs = entries.firstWhere(
         (e) => e['language']['name'] == 'es',
         orElse: () => entries.firstWhere(
@@ -47,11 +49,15 @@ class PokemonService {
           orElse: () => null,
         ),
       );
+
       if (entryEs == null) return 'Descripción no disponible.';
+
       return (entryEs['flavor_text'] as String)
           .replaceAll('\n', ' ')
           .replaceAll('\f', ' ');
-    } else {
+    } on NetworkException {
+      return 'Sin conexión a Internet para cargar la descripción.';
+    } on ApiException {
       return 'Descripción no disponible.';
     }
   }
