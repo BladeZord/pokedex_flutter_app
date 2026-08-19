@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/models/pokemon_model.dart';
+import 'package:pokedex_flutter_app/screens/pokemon_search_screen.dart';
+
 import '../services/pokemon_service.dart';
 import 'pokemon_detail_screen.dart';
 
@@ -13,11 +15,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PokemonService _service = PokemonService();
   late Future<List<PokemonModel>> _pokemonsFuture;
+  List<PokemonModel> _pokemonsFiltrados = [];
 
   @override
   void initState() {
     super.initState();
-    _pokemonsFuture = _cargarPokemons();
+
+    _pokemonsFuture = _cargarPokemons().then((pokemons) {
+      _pokemonsFiltrados = pokemons;
+      return pokemons;
+    });
   }
 
   Future<List<PokemonModel>> _cargarPokemons() async {
@@ -33,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _recargar() {
     setState(() {
       _pokemonsFuture = _cargarPokemons();
+      _pokemonsFiltrados = [];
     });
   }
 
@@ -69,53 +77,79 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final pokemons = snapshot.data ?? [];
 
-          return GridView.builder(
-            padding: const EdgeInsets.all(12),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.75,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: pokemons.length,
-            itemBuilder: (context, index) {
-              final pokemon = pokemons[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PokemonDetailScreen(pokemon: pokemon),
-                    ),
-                  );
+
+          return Column(
+            children: [
+              PokemonSearchScreen<PokemonModel>(
+                elementos: pokemons,
+                valorABuscar: (pokemon) => pokemon.name,
+                listadoCambiado: (resultados) {
+                  setState(() {
+                    _pokemonsFiltrados = resultados;
+                  });
                 },
-                child: Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                textoSugerido: 'Buscar Pokémon',
+              ),
+
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(12),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
                   ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.network(
-                          pokemon.imageUrl,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.catching_pokemon, size: 50),
+                  itemCount: _pokemonsFiltrados.length,
+                  itemBuilder: (context, index) {
+                    final pokemon = _pokemonsFiltrados[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                PokemonDetailScreen(pokemon: pokemon),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Image.network(
+                                pokemon.imageUrl,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.catching_pokemon,
+                                    size: 50,
+                                  );
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text(
+                                pokemon.name.toUpperCase(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          pokemon.name.toUpperCase(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ),
+            ],
           );
         },
       ),

@@ -41,7 +41,7 @@ class _MainNavigationState extends State<MainNavigation>
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.info_outline),
+            icon: Icon(Icons.search),
             label: 'Buscar',
           ),
         ],
