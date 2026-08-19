@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:pokedex_flutter_app/exception/api_exception.dart';
 import 'package:pokedex_flutter_app/helpers/http_helper.dart';
+
 import '../models/pokemon_model.dart';
 
 class PokemonService {
@@ -59,6 +61,27 @@ class PokemonService {
       return 'Sin conexión a Internet para cargar la descripción.';
     } on ApiException {
       return 'Descripción no disponible.';
+    }
+  }
+
+  Future<List<PokemonModel>> obtenerPoolPokemon({int limit = 60}) async {
+    final nombres = await obtenerListaNombres(limit: limit);
+    final futuros = nombres.map((nombre) => obtenerDetallePokemon(nombre));
+    return Future.wait(futuros); // ejecuta todas las peticiones en paralelo
+  }
+
+  Future<List<String>> obtenerTiposDisponibles() async {
+    final response = await HttpHelper.get('$_baseUrl/type');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final List resultados = data['results'];
+      return resultados
+          .map<String>((t) => t['name'] as String)
+          .where((nombre) => nombre != 'unknown' && nombre != 'shadow')
+          .toList();
+    } else {
+      throw Exception('Error al obtener tipos: ${response.statusCode}');
     }
   }
 }
