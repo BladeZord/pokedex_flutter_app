@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pokedex_flutter_app/constants/app_constants.dart';
 import 'package:pokedex_flutter_app/models/pokemon_model.dart';
 
 class PokemonCard extends StatelessWidget {
@@ -31,10 +32,7 @@ class PokemonCard extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               child: Text(
                 pokemon.name.toUpperCase(),
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
+                style: AppConstants.estiloFuenteGrueso,
               ),
             ),
           ],
