@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppLoading extends StatelessWidget {
   final String? mensaje;
@@ -17,7 +18,10 @@ class AppLoading extends StatelessWidget {
           const CircularProgressIndicator(),
           if (mensaje != null) ...[
             const SizedBox(height: 12),
-            Text(mensaje!),
+            Text(
+              mensaje!,
+              style: GoogleFonts.poppins(color: Colors.grey.shade700),
+              ),
           ],
         ],
       ),
