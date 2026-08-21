@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter_app/states/Pokemon_search_state.dart';
+import 'package:pokedex_flutter_app/states/pokemon_search_state.dart';
 
 class PokemonSearchScreen<T> extends StatefulWidget {
   final List<T> elementos;
