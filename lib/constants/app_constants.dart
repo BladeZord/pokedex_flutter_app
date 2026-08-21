@@ -15,4 +15,6 @@ class AppConstants {
     fontWeight: FontWeight.bold,
     fontSize: 13,
   ); 
+
+  static final bgGris = Colors.grey.shade300;
 }

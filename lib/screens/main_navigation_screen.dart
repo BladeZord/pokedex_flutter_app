@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/screens/home_screen.dart';
-import 'package:pokedex_flutter_app/screens/pokemon_search_screen.dart';
 
 class MainNavigation extends  StatefulWidget 
 {

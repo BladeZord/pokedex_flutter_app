@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex_flutter_app/constants/app_constants.dart';
+import 'package:pokedex_flutter_app/helpers/color_helper.dart';
+import '../components/pokemon_type_chip.dart';
 import '../models/pokemon_model.dart';
 import '../services/pokemon_service.dart';
 
@@ -8,25 +11,9 @@ class PokemonDetailScreen extends StatelessWidget {
 
   PokemonDetailScreen({super.key, required this.pokemon});
 
-  Color _colorPorTipo(String tipo) {
-    const colores = {
-      'fire': Colors.deepOrange,
-      'water': Colors.blue,
-      'grass': Colors.green,
-      'electric': Colors.amber,
-      'psychic': Colors.pink,
-      'steel': Colors.blueGrey,
-      'ghost': Colors.deepPurple,
-      'normal': Colors.brown,
-      'poison': Colors.purple,
-      'rock': Colors.grey,
-    };
-    return colores[tipo] ?? Colors.teal;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colorPrincipal = _colorPorTipo(pokemon.types.first);
+    final colorPrincipal = ColorHelper.colorPorTipo(pokemon.types.first);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,21 +41,9 @@ class PokemonDetailScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: pokemon.types.map((tipo) {
-                      return Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _colorPorTipo(tipo),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tipo.toUpperCase(),
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12),
-                        ),
+                      return PokemonTypeChip(
+                        tipo: tipo,
+                        color: ColorHelper.colorPorTipo(tipo),
                       );
                     }).toList(),
                   ),
@@ -137,7 +112,7 @@ class _StatBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: (value / 150).clamp(0, 1),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: AppConstants.bgGris,
               color: color,
               minHeight: 8,
             ),
