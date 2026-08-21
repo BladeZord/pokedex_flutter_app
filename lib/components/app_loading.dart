@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex_flutter_app/constants/app_constants.dart';
 
 class AppLoading extends StatelessWidget {

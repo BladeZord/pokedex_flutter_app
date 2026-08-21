@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pokedex_flutter_app/constants/app_constants.dart';
 import 'package:pokedex_flutter_app/models/pokemon_model.dart';
 
