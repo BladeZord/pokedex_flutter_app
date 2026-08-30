@@ -84,4 +84,43 @@ class PokemonService {
       throw Exception('Error al obtener tipos: ${response.statusCode}');
     }
   }
+
+  Future<List<PokemonModel>> obtenerPokemonsPorRegion(int generationId, {int limit = 12}) async {
+    final response = await HttpHelper.get('$_baseUrl/generation/$generationId');
+
+    if (response.statusCode != 200) {
+      throw Exception('Error al obtener datos de la región');
+    }
+
+    final data = jsonDecode(response.body);
+    final List species = data['pokemon_species'];
+
+    // Tomamos los primeros elementos según el límite y extraemos los nombres
+    final nombres = species
+        .take(limit)
+        .map<String>((s) => s['name'] as String);
+
+    // Reutilizamos obtenerDetallePokemon en paralelo para evitar peticiones secuenciales lentas
+    final futuros = nombres.map((nombre) => obtenerDetallePokemon(nombre));
+    return Future.wait(futuros);
+  }
+
+  /// Mapa con los nombres de los 3 iniciales por ID de Generación
+  static const Map<int, List<String>> _inicialesPorGeneracion = {
+    1: ['bulbasaur', 'charmander', 'squirtle'],       // Kanto
+    2: ['chikorita', 'cyndaquil', 'totodile'],        // Johto
+    3: ['treecko', 'torchic', 'mudkip'],              // Hoenn
+    4: ['turtwig', 'chimchar', 'piplup'],             // Sinnoh
+    5: ['snivy', 'tepig', 'oshawott'],                // Unova / Teselia
+    6: ['chespin', 'fennekin', 'froakie'],            // Kalos
+  };
+
+  /// Obtiene únicamente los 3 Pokémon iniciales de una región específica
+  Future<List<PokemonModel>> obtenerInicialesPorRegion(int generationId) async {
+    final nombres = _inicialesPorGeneracion[generationId] ?? [];
+    
+    // Reutiliza tu método paralelo
+    final futuros = nombres.map((nombre) => obtenerDetallePokemon(nombre));
+    return Future.wait(futuros);
+  }
 }
