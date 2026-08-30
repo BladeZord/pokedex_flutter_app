@@ -82,6 +82,7 @@ class AppSearchBarState extends State<AppSearchBar> {
                 flex: 2,
                 child: DropdownButtonFormField<PokemonKeyFilter>(
                   value: _claveSeleccionada,
+                  isExpanded: true, 
                   decoration: const InputDecoration(
                     isDense: true,
                     border: OutlineInputBorder(),
@@ -90,7 +91,7 @@ class AppSearchBarState extends State<AppSearchBar> {
                       .map(
                         (clave) => DropdownMenuItem(
                           value: clave,
-                          child: Text(clave.etiqueta),
+                          child: Text(clave.etiqueta, overflow: TextOverflow.ellipsis,),
                         ),
                       )
                       .toList(),
@@ -110,6 +111,7 @@ class AppSearchBarState extends State<AppSearchBar> {
                 child: _esFiltroDeTipo
                     ? DropdownButtonFormField<String>(
                         value: _tipoSeleccionado,
+                        isExpanded: true,
                         decoration: const InputDecoration(
                           isDense: true,
                           hintText: 'Selecciona un tipo',

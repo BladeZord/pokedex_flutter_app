@@ -6,21 +6,23 @@ Este proyecto consiste en una aplicación móvil desarrollada con **Flutter** ll
 
 La aplicación permite consultar información de diferentes Pokémon obtenidos desde una API pública externa. En la pantalla principal se muestra una lista de Pokémon con su imagen, nombre y tipo. Al seleccionar uno de ellos, el usuario puede acceder a una pantalla de detalle donde se muestra información adicional como sus estadísticas y descripción.
 
+> Este repositorio **continúa la misma aplicación** en la **Actividad Integradora 2**. La documentación original de la Actividad Integradora 1 se mantiene en las secciones siguientes. Las mejoras nuevas están en [Actividad Integradora 2](#actividad-integradora-2).
+
 ---
 
 # Objetivo
 
 Desarrollar una aplicación básica utilizando Flutter que permita aplicar los conocimientos iniciales relacionados con:
 
-* Creación de un proyecto Flutter.
-* Uso de widgets básicos.
-* Construcción de interfaces utilizando Material Design.
-* Uso de `MaterialApp`, `Scaffold` y `AppBar`.
-* Organización del código en archivos y carpetas.
-* Consumo de información desde una API externa.
-* Instalación y utilización de un paquete externo.
-* Ejecución de la aplicación en un navegador y emulador Android.
-* Uso de Git y GitHub para el control de versiones.
+- Creación de un proyecto Flutter.
+- Uso de widgets básicos.
+- Construcción de interfaces utilizando Material Design.
+- Uso de `MaterialApp`, `Scaffold` y `AppBar`.
+- Organización del código en archivos y carpetas.
+- Consumo de información desde una API externa.
+- Instalación y utilización de un paquete externo.
+- Ejecución de la aplicación en un navegador y emulador Android.
+- Uso de Git y GitHub para el control de versiones.
 
 ---
 
@@ -32,14 +34,14 @@ La aplicación permite visualizar información de diferentes Pokémon y consulta
 
 Entre las funcionalidades implementadas se encuentran:
 
-* Visualización de una lista de Pokémon.
-* Consulta de imágenes.
-* Visualización de tipos.
-* Acceso a una pantalla de detalle.
-* Visualización de estadísticas.
-* Visualización de información adicional.
-* Botón para volver a cargar la información.
-* Consumo de datos desde una API externa.
+- Visualización de una lista de Pokémon.
+- Consulta de imágenes.
+- Visualización de tipos.
+- Acceso a una pantalla de detalle.
+- Visualización de estadísticas.
+- Visualización de información adicional.
+- Botón para volver a cargar la información.
+- Consumo de datos desde una API externa.
 
 ---
 
@@ -47,13 +49,13 @@ Entre las funcionalidades implementadas se encuentran:
 
 El proyecto fue desarrollado utilizando las siguientes tecnologías:
 
-* Flutter.
-* Dart.
-* Material Design.
-* Git.
-* GitHub.
-* Android Emulator.
-* Visual Studio Code.
+- Flutter.
+- Dart.
+- Material Design.
+- Git.
+- GitHub.
+- Android Emulator.
+- Visual Studio Code.
 
 ---
 
@@ -105,9 +107,9 @@ El proyecto fue ejecutado inicialmente desde Visual Studio Code.
 
 También se realizaron pruebas en:
 
-* Navegador web.
-* Vista móvil.
-* Emulador Android.
+- Navegador web.
+- Vista móvil.
+- Emulador Android.
 
 ## Ejecución inicial en navegador
 
@@ -129,14 +131,36 @@ La aplicación se encuentra organizada en diferentes carpetas según la responsa
 
 ```text
 lib/
-├── main.dart
-├── models/
-│   └── pokemon_model.dart
-├── screens/
-│   ├── home_screen.dart
-│   └── pokemon_detail_screen.dart
-└── services/
-    └── pokemon_service.dart
+├── 📁 components
+│   ├── 📄 app_loading.dart
+│   ├── 📄 app_search_bar.dart
+│   ├── 📄 card_button.dart
+│   ├── 📄 pokemon_card.dart
+│   └── 📄 pokemon_type_chip.dart
+├── 📁 constants
+│   └── 📄 app_constants.dart
+├── 📁 exception
+│   └── 📄 api_exception.dart
+├── 📁 helpers
+│   ├── 📄 color_helper.dart
+│   └── 📄 http_helper.dart
+├── 📁 models
+│   ├── 📄 pokemon_filter.dart
+│   └── 📄 pokemon_model.dart
+├── 📁 screens
+│   ├── 📄 choose_pokemon_screen.dart
+│   ├── 📄 home_screen.dart
+│   ├── 📄 main_navigation_screen.dart
+│   ├── 📄 pokemon_catalog_screen.dart
+│   ├── 📄 pokemon_detail_screen.dart
+│   ├── 📄 pokemon_search_screen.dart
+│   └── 📄 team_screen.dart
+├── 📁 services
+│   └── 📄 pokemon_service.dart
+├── 📁 states
+│   ├── 📄 app_team_scope.dart
+│   └── 📄 pokemon_search_state.dart
+└── 📄 main.dart
 ```
 
 ## `main.dart`
@@ -147,10 +171,10 @@ En este archivo se configura la aplicación utilizando `MaterialApp` y se establ
 
 Entre sus principales responsabilidades se encuentran:
 
-* Inicializar la aplicación.
-* Configurar el tema.
-* Definir el título.
-* Establecer la pantalla inicial.
+- Inicializar la aplicación.
+- Configurar el tema.
+- Definir el título.
+- Establecer la pantalla inicial.
 
 ---
 
@@ -160,12 +184,12 @@ Contiene el modelo utilizado para representar la información de un Pokémon.
 
 El modelo permite organizar los datos obtenidos desde la API, como:
 
-* Nombre.
-* Imagen.
-* Tipos.
-* Estadísticas.
-* Descripción.
-* Información adicional.
+- Nombre.
+- Imagen.
+- Tipos.
+- Estadísticas.
+- Descripción.
+- Información adicional.
 
 La utilización de un modelo permite separar la estructura de los datos de la interfaz gráfica.
 
@@ -177,10 +201,10 @@ Este archivo contiene la lógica encargada de realizar las solicitudes a la API 
 
 Su responsabilidad principal es:
 
-* Realizar solicitudes HTTP.
-* Obtener la información de los Pokémon.
-* Procesar las respuestas recibidas.
-* Convertir los datos obtenidos en objetos de tipo `PokemonModel`.
+- Realizar solicitudes HTTP.
+- Obtener la información de los Pokémon.
+- Procesar las respuestas recibidas.
+- Convertir los datos obtenidos en objetos de tipo `PokemonModel`.
 
 ---
 
@@ -192,16 +216,16 @@ En esta pantalla se muestra una lista de Pokémon obtenidos desde el servicio.
 
 La pantalla incluye:
 
-* `Scaffold`.
-* `AppBar`.
-* Título de la aplicación.
-* Indicador de carga.
-* Lista de Pokémon.
-* Tarjetas con información.
-* Imágenes.
-* Tipos de Pokémon.
-* Botón para actualizar la información.
-* Navegación hacia la pantalla de detalle.
+- `Scaffold`.
+- `AppBar`.
+- Título de la aplicación.
+- Indicador de carga.
+- Lista de Pokémon.
+- Tarjetas con información.
+- Imágenes.
+- Tipos de Pokémon.
+- Botón para actualizar la información.
+- Navegación hacia la pantalla de detalle.
 
 ---
 
@@ -211,11 +235,11 @@ Contiene la pantalla encargada de mostrar información detallada de un Pokémon 
 
 Entre la información mostrada se encuentran:
 
-* Imagen.
-* Nombre.
-* Tipos.
-* Estadísticas.
-* Información descriptiva.
+- Imagen.
+- Nombre.
+- Tipos.
+- Estadísticas.
+- Información descriptiva.
 
 ## Evidencia
 
@@ -233,9 +257,9 @@ Se utiliza para configurar la aplicación utilizando Material Design.
 
 Permite establecer elementos como:
 
-* Tema.
-* Título.
-* Pantalla inicial.
+- Tema.
+- Título.
+- Pantalla inicial.
 
 ---
 
@@ -245,9 +269,9 @@ Se utiliza como estructura principal de las pantallas.
 
 Permite organizar elementos como:
 
-* `AppBar`.
-* Contenido principal.
-* Botones flotantes u otros componentes.
+- `AppBar`.
+- Contenido principal.
+- Botones flotantes u otros componentes.
 
 ---
 
@@ -281,11 +305,11 @@ Se utiliza para aplicar estilos y organizar elementos.
 
 Permite trabajar con propiedades como:
 
-* Espaciado.
-* Márgenes.
-* Colores.
-* Bordes.
-* Tamaños.
+- Espaciado.
+- Márgenes.
+- Colores.
+- Bordes.
+- Tamaños.
 
 ---
 
@@ -303,11 +327,11 @@ Se utiliza para mostrar información dentro de la aplicación.
 
 Entre los textos mostrados se encuentran:
 
-* Nombre de la aplicación.
-* Nombre del Pokémon.
-* Tipos.
-* Estadísticas.
-* Información adicional.
+- Nombre de la aplicación.
+- Nombre del Pokémon.
+- Tipos.
+- Estadísticas.
+- Información adicional.
 
 ---
 
@@ -372,11 +396,11 @@ La información utilizada por la aplicación se obtiene desde **PokéAPI**.
 
 PokéAPI proporciona información relacionada con el universo Pokémon, incluyendo datos como:
 
-* Nombre.
-* Tipos.
-* Estadísticas.
-* Características.
-* Imágenes.
+- Nombre.
+- Tipos.
+- Estadísticas.
+- Características.
+- Imágenes.
 
 La aplicación realiza solicitudes a la API y procesa la información recibida para mostrarla dentro de la interfaz.
 
@@ -462,6 +486,26 @@ Actualmente incluye evidencias relacionadas con:
 
 ![Detalle de Pokémon](docs/07_base_inicial_ejecucion_emulador_vista_detalle.png)
 
+### Regiones
+
+![Submenú de regiones](docs/09_submenu_regiones.png)
+
+### Pokémon por región
+
+![Vista inicial de Pokémon por región](docs/10_vista_inicial_pokemon_por_region.png)
+
+### Detalle de Pokémon
+
+![Detalle con opción de agregar al equipo](docs/11_vista_detalle_pokemon_opcion_agregar_equipo.png)
+
+### Mi equipo
+
+![Vista de Mi equipo](docs/12_vista_mi_equipo.png)
+
+### Búsqueda con filtros
+
+![Búsqueda con filtros aplicados](docs/13_vista_busqueda_con_filtros.png)
+
 ---
 
 # Control de versiones
@@ -475,6 +519,7 @@ Durante el desarrollo se realizaron diferentes commits que permiten mantener un 
 El proyecto cumple con el requisito de contar con un mínimo de cuatro commits.
 
 ---
+
 # Declaración de uso de IA
 
 Este proyecto ha sido desarrollado con asistencia de herramientas de **inteligencia artificial (IA)** para tareas puntuales de corrección, optimización de código existente, creación de widgets reutilizables, documentación y revisión.
@@ -482,6 +527,7 @@ Este proyecto ha sido desarrollado con asistencia de herramientas de **inteligen
 La arquitectura de la aplicación, las decisiones de diseño y los requisitos funcionales implementados son responsabilidad del autor del proyecto.
 
 ---
+
 # Repositorio
 
 El código fuente completo se encuentra publicado en el repositorio público:
@@ -490,12 +536,12 @@ El código fuente completo se encuentra publicado en el repositorio público:
 
 El repositorio incluye:
 
-* Código fuente de Flutter.
-* Configuración del proyecto.
-* Archivo `pubspec.yaml`.
-* Documentación.
-* Capturas y evidencias.
-* Historial de commits.
+- Código fuente de Flutter.
+- Configuración del proyecto.
+- Archivo `pubspec.yaml`.
+- Documentación.
+- Capturas y evidencias.
+- Historial de commits.
 
 ---
 
@@ -535,7 +581,7 @@ La aplicación puede ejecutarse en un dispositivo físico, emulador Android o, d
 
 # Autor
 
-**Nombre completo del estudiante:** Kevin Quito
+**Nombre del estudiante:** Kevin Quito
 
 ---
 
@@ -543,11 +589,167 @@ La aplicación puede ejecutarse en un dispositivo físico, emulador Android o, d
 
 Las siguientes fuentes fueron utilizadas como referencia durante el desarrollo del proyecto:
 
-* Flutter Documentation.
-* Dart Documentation.
-* Pub.dev.
-* Documentación del paquete `http`.
-* PokéAPI Documentation.
-* GitHub Documentation.
+- Flutter Documentation.
+- Dart Documentation.
+- Pub.dev.
+- Documentación del paquete `http`.
+- PokéAPI Documentation.
+- GitHub Documentation.
 
 Estas fuentes fueron utilizadas como apoyo para la creación del proyecto, implementación de widgets, consumo de servicios HTTP y publicación del código mediante GitHub.
+
+---
+
+# Actividad Integradora 2
+
+## Continuación de la aplicación
+
+Se **continuó la aplicación de la Actividad Integradora 1** (Pokédex).  Sobre la misma base se agregó navegación entre varias pantallas, un catálogo con filtros, un equipo con estado local y la personalización visible de la app (nombre, logotipo e ícono).
+
+## Descripción breve
+
+**Mi Pokédex Favorita** permite explorar Pokémon por región, buscarlos en un catálogo con filtros, ver su detalle (tipos, estadísticas y descripción) y armar un equipo de hasta 6 integrantes. El equipo se actualiza en pantalla con `setState()`.
+
+## Nuevas funcionalidades
+
+- Navegación inferior entre **Inicio** y **Buscar**.
+- Pantalla de **regiones** con iniciales de cada generación.
+- Pantalla de **detalle** conectada desde el catálogo, las regiones y el equipo.
+- **Mi equipo**: agregar y quitar Pokémon.
+- Filtros de búsqueda por nombre y tipo (`AppSearchBar`).
+- Mensajes con `SnackBar` y confirmaciones con `AlertDialog`.
+- Logotipo en la pantalla de inicio e ícono de lanzamiento personalizado.
+- Nombre visible de la aplicación: **Mi Pokédex Favorita**.
+
+## Pantallas desarrolladas
+
+
+| Pantalla | Archivo                                   | Función                                                                   |
+| -------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| Inicio   | `lib/screens/home_screen.dart`            | Dashboard con logotipo y accesos a regiones, equipo, medallas y batallas. |
+| Buscar   | `lib/screens/pokemon_catalog_screen.dart` | Catálogo con filtros, recarga y tarjetas de Pokémon.                      |
+| Regiones | `lib/screens/choose_pokemon_screen.dart`  | Selección de región y listado de iniciales.                               |
+| Detalle  | `lib/screens/pokemon_detail_screen.dart`  | Estadísticas, descripción y acción de agregar o quitar del equipo.        |
+
+
+Pantalla adicional (relacionada con `setState`):
+
+- **Mi equipo** (`lib/screens/team_screen.dart`): muestra el equipo actual y permite retirar integrantes.
+
+La navegación entre pestañas usa el índice de `BottomNavigationBar` (`setState`). El resto de pantallas se abre con `Navigator.push`.
+
+## Estructura actual de `lib/`
+
+```text
+lib/
+├── main.dart
+├── components/
+│   ├── app_loading.dart
+│   ├── app_search_bar.dart
+│   ├── card_button.dart
+│   ├── pokemon_card.dart
+│   └── pokemon_type_chip.dart
+├── constants/
+│   └── app_constants.dart
+├── helpers/
+│   ├── color_helper.dart
+│   └── http_helper.dart
+├── models/
+│   ├── pokemon_filter.dart
+│   └── pokemon_model.dart
+├── screens/
+│   ├── choose_pokemon_screen.dart
+│   ├── home_screen.dart
+│   ├── main_navigation_screen.dart
+│   ├── pokemon_catalog_screen.dart
+│   ├── pokemon_detail_screen.dart
+│   └── team_screen.dart
+├── services/
+│   └── pokemon_service.dart
+└── states/
+    ├── app_team_scope.dart
+    └── pokemon_search_state.dart
+```
+
+## Widgets utilizados en esta etapa
+
+Además de `MaterialApp`, `Scaffold` y `AppBar`, se incorporaron entre otros:
+
+- `ListView`
+- `GridView`
+- `ListTile`
+- `Card`
+- `CircleAvatar`
+- `Divider`
+- `Image` / `Image.asset` / `Image.network`
+- `Icon`
+- `ElevatedButton`
+- `IconButton`
+- `FloatingActionButton`
+- `Padding`
+- `SizedBox`
+- `Expanded`
+- `Container`
+- `BottomNavigationBar`
+- `AlertDialog`
+- `SnackBar`
+
+## Interacciones implementadas
+
+1. **Navegar entre pantallas** con `Navigator` (regiones, detalle y equipo) y con la barra inferior (Inicio / Buscar).
+2. **SnackBar** al agregar o quitar un Pokémon del equipo.
+3. **AlertDialog** si el equipo ya tiene 6 integrantes, al confirmar un retiro y en las secciones Medallas / Batallas.
+4. **Filtrar** el catálogo y **recargarlo** con el botón flotante.
+5. **Cambiar la región** visible con `setState`.
+
+## Funcionalidad con `setState()`
+
+El equipo se guarda en `MyApp` y se comparte con `AppTeamScope`. Cada alta o baja llama a `setState()`, y las pantallas de detalle y equipo se redibujan.
+
+Otros usos de `setState()`:
+
+- Cambio de pestaña en `MainNavigation`.
+- Selección de región en `ChoosePokemonScreen`.
+- Filtros y recarga del catálogo en `PokemonCatalogScreen`.
+
+## Paquetes externos
+
+
+| Paquete             | Uso                                                              |
+| ------------------- | ---------------------------------------------------------------- |
+| `http`              | Solicitudes a PokéAPI.                                           |
+| `connectivity_plus` | Comprobar conexión antes de consultar la API (`HttpHelper`).     |
+| `google_fonts`      | Tipografía Poppins en constantes y componentes (`AppConstants`). |
+
+
+## Personalización
+
+- **Nombre:** `Mi Pokédex Favorita` en `MaterialApp`, en `AndroidManifest.xml` (`android:label`) y en iOS (`CFBundleDisplayName`).
+- **Ícono de lanzamiento:** `android/app/src/main/res/mipmap-*/ic_launcher.png` e iconos web.
+- **Logotipo:** `assets/images/pokedex_logo.png`, mostrado en la pantalla de inicio.
+- **Colores:** rojo como color principal y colores por tipo de Pokémon (`ColorHelper`).
+
+## Capturas
+
+Las evidencias de la Actividad Integradora 1 permanecen en `docs/`.
+
+Para esta etapa, las pantallas principales a capturar en el emulador son:
+
+- Inicio con logotipo.
+- Catálogo / búsqueda.
+- Regiones.
+- Detalle de un Pokémon.
+- Mi equipo (con al menos un integrante).
+
+## Cómo ejecutar el proyecto
+
+```bash
+cd pokedex_flutter_app
+flutter pub get
+flutter devices
+flutter run
+```
+
+La aplicación está pensada para ejecutarse en un **emulador Android**. También puede probarse en Chrome u otras plataformas soportadas por Flutter.
+
+Se recomienda un historial de **al menos 10 commits** en el repositorio (este proyecto ya supera ese mínimo con el historial acumulado de ambas actividades).
