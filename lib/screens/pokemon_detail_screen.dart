@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/constants/app_constants.dart';
 import 'package:pokedex_flutter_app/helpers/color_helper.dart';
+import 'package:pokedex_flutter_app/states/app_team_scope.dart';
 import '../components/pokemon_type_chip.dart';
 import '../models/pokemon_model.dart';
 import '../services/pokemon_service.dart';
@@ -14,18 +15,21 @@ class PokemonDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorPrincipal = ColorHelper.colorPorTipo(pokemon.types.first);
+    final teamScope = AppTeamScope.of(context);
+    final enEquipo = teamScope.estaEnEquipo(pokemon);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(pokemon.name.toUpperCase()),
         backgroundColor: colorPrincipal,
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               width: double.infinity,
-              color: colorPrincipal.withOpacity(0.15),
+              color: colorPrincipal.withValues(alpha: 0.15),
               padding: const EdgeInsets.all(20),
               child: Image.network(
                 pokemon.imageUrl,
@@ -81,6 +85,58 @@ class PokemonDetailScreen extends StatelessWidget {
                         style: const TextStyle(fontSize: 15, height: 1.4),
                       );
                     },
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (enEquipo) {
+                          teamScope.quitarDelEquipo(pokemon);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${pokemon.name} fue retirado del equipo.'),
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (teamScope.equipo.length >= AppTeamScope.capacidadMaxima) {
+                          showDialog<void>(
+                            context: context,
+                            builder: (dialogContext) {
+                              return AlertDialog(
+                                title: const Text('Equipo completo'),
+                                content: const Text(
+                                  'Solo puedes tener 6 Pokémon en el equipo. Retira uno para agregar otro.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(dialogContext),
+                                    child: const Text('Entendido'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          return;
+                        }
+
+                        teamScope.agregarAlEquipo(pokemon);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${pokemon.name} se unió a tu equipo.'),
+                          ),
+                        );
+                      },
+                      icon: Icon(enEquipo ? Icons.remove_circle : Icons.add_circle),
+                      label: Text(enEquipo ? 'Quitar del equipo' : 'Agregar al equipo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: enEquipo ? Colors.grey.shade700 : colorPrincipal,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
                   ),
                 ],
               ),
