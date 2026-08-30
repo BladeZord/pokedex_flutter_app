@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:pokedex_flutter_app/exception/api_exception.dart';
 import 'package:pokedex_flutter_app/helpers/http_helper.dart';
 
+import '../models/pokemon_filter.dart';
 import '../models/pokemon_model.dart';
 
 class PokemonService {
@@ -122,5 +123,107 @@ class PokemonService {
     // Reutiliza tu método paralelo
     final futuros = nombres.map((nombre) => obtenerDetallePokemon(nombre));
     return Future.wait(futuros);
+  }
+
+  List<String>? _nombresCache;
+
+  /// Lista completa de nombres (una sola petición liviana, se guarda en memoria).
+  Future<List<String>> obtenerTodosLosNombres() async {
+    if (_nombresCache != null) return _nombresCache!;
+    _nombresCache = await obtenerListaNombres(limit: 2000);
+    return _nombresCache!;
+  }
+
+  Future<List<String>> obtenerNombresPorTipo(String tipo) async {
+    final response = await HttpHelper.get('$_baseUrl/type/${tipo.toLowerCase()}');
+    final data = jsonDecode(response.body);
+    final List pokemon = data['pokemon'];
+    return pokemon
+        .map<String>((entrada) => entrada['pokemon']['name'] as String)
+        .toList();
+  }
+
+  /// Busca en PokéAPI (no solo en un listado local). Combina nombre y tipos.
+  Future<List<PokemonModel>> buscarPokemon({
+    required List<PokemonFilter> filtros,
+    int maxResultados = 30,
+  }) async {
+    if (filtros.isEmpty) return [];
+
+    final filtrosNombre = filtros
+        .where((filtro) => filtro.key == PokemonKeyFilter.nombre)
+        .map((filtro) => filtro.value.trim().toLowerCase())
+        .where((valor) => valor.isNotEmpty)
+        .toList();
+    final tiposPrimarios = filtros
+        .where((filtro) => filtro.key == PokemonKeyFilter.tipoPrimario)
+        .map((filtro) => filtro.value.toLowerCase())
+        .toList();
+    final tiposSecundarios = filtros
+        .where((filtro) => filtro.key == PokemonKeyFilter.tipoSecundario)
+        .map((filtro) => filtro.value.toLowerCase())
+        .toList();
+
+    var candidatos = <String>[];
+
+    if (filtrosNombre.isNotEmpty) {
+      final todos = await obtenerTodosLosNombres();
+      candidatos = todos.where((nombre) {
+        return filtrosNombre.every((consulta) => nombre.contains(consulta));
+      }).toList();
+
+      if (candidatos.isEmpty && filtrosNombre.length == 1) {
+        try {
+          final exacto = await obtenerDetallePokemon(filtrosNombre.first);
+          return _aplicarFiltrosDeTipo([exacto], tiposPrimarios, tiposSecundarios);
+        } on ApiException {
+          return [];
+        }
+      }
+    } else {
+      final tipoBase = tiposPrimarios.isNotEmpty
+          ? tiposPrimarios.first
+          : tiposSecundarios.first;
+      candidatos = await obtenerNombresPorTipo(tipoBase);
+    }
+
+    final limiteCarga = (tiposPrimarios.isNotEmpty || tiposSecundarios.isNotEmpty)
+        ? maxResultados * 4
+        : maxResultados;
+
+    final nombresACargar = candidatos.take(limiteCarga).toList();
+    if (nombresACargar.isEmpty) return [];
+
+    final detalles = await Future.wait(
+      nombresACargar.map(obtenerDetallePokemon),
+    );
+
+    return _aplicarFiltrosDeTipo(
+      detalles,
+      tiposPrimarios,
+      tiposSecundarios,
+    ).take(maxResultados).toList();
+  }
+
+  List<PokemonModel> _aplicarFiltrosDeTipo(
+    List<PokemonModel> pokemon,
+    List<String> tiposPrimarios,
+    List<String> tiposSecundarios,
+  ) {
+    return pokemon.where((item) {
+      if (tiposPrimarios.isNotEmpty) {
+        if (item.types.isEmpty ||
+            !tiposPrimarios.contains(item.types.first.toLowerCase())) {
+          return false;
+        }
+      }
+      if (tiposSecundarios.isNotEmpty) {
+        if (item.types.length < 2 ||
+            !tiposSecundarios.contains(item.types[1].toLowerCase())) {
+          return false;
+        }
+      }
+      return true;
+    }).toList();
   }
 }
