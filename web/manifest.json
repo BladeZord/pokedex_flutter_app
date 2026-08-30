@@ -1,11 +1,11 @@
 {
-    "name": "pokedex_flutter_app",
-    "short_name": "pokedex_flutter_app",
+    "name": "Mi Pokédex Favorita",
+    "short_name": "Pokédex",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Consulta Pokémon, arma tu equipo y explora regiones.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
