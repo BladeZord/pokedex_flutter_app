@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter_app/models/pokemon_model.dart';
-import 'package:pokedex_flutter_app/services/pokemon_service.dart';
+import 'package:pokedex_flutter_app/components/app_loading.dart';
 import 'package:pokedex_flutter_app/components/card_button.dart';
+import 'package:pokedex_flutter_app/models/pokemon_model.dart';
+import 'package:pokedex_flutter_app/screens/pokemon_detail_screen.dart';
+import 'package:pokedex_flutter_app/services/pokemon_service.dart';
 
 class ChoosePokemonScreen extends StatefulWidget{
  const ChoosePokemonScreen({super.key});
@@ -96,7 +98,7 @@ class _ChoosePokemonScreenState extends State<ChoosePokemonScreen> {
             future: _pokemonsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const AppLoading(mensaje: 'Buscando iniciales...');
               }
 
               if (snapshot.hasError) {
@@ -111,12 +113,25 @@ class _ChoosePokemonScreenState extends State<ChoosePokemonScreen> {
                   final pokemon = pokemons[index];
                   return Card(
                     child: ListTile(
-                      leading: Image.network(
-                        pokemon.imageUrl ?? '',
-                        errorBuilder: (_, __, ___) => const Icon(Icons.catching_pokemon),
+                      leading: CircleAvatar(
+                        backgroundImage: pokemon.imageUrl.isNotEmpty
+                            ? NetworkImage(pokemon.imageUrl)
+                            : null,
+                        child: pokemon.imageUrl.isEmpty
+                            ? const Icon(Icons.catching_pokemon)
+                            : null,
                       ),
                       title: Text(pokemon.name.toUpperCase()),
                       subtitle: Text('Tipos: ${pokemon.types.join(", ")}'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PokemonDetailScreen(pokemon: pokemon),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },
