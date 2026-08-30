@@ -651,6 +651,8 @@ lib/
 │   └── pokemon_type_chip.dart
 ├── constants/
 │   └── app_constants.dart
+├── exception/
+│   └── api_exception.dart
 ├── helpers/
 │   ├── color_helper.dart
 │   └── http_helper.dart
@@ -663,13 +665,102 @@ lib/
 │   ├── main_navigation_screen.dart
 │   ├── pokemon_catalog_screen.dart
 │   ├── pokemon_detail_screen.dart
+│   ├── pokemon_search_screen.dart
 │   └── team_screen.dart
 ├── services/
 │   └── pokemon_service.dart
 └── states/
     ├── app_team_scope.dart
-    └── pokemon_search_state.dart
+    └── Pokemon_search_state.dart
 ```
+
+## Documentación de archivos (Actividad Integradora 2)
+
+Esta sección documenta las clases que se agregaron o cambiaron significativamente en esta etapa. `models/pokemon_model.dart` y `services/pokemon_service.dart` ya estaban documentados en la Actividad Integradora 1; aquí solo se agregan los métodos nuevos.
+
+### `main.dart`
+
+Ahora es `StatefulWidget` (`MyApp` / `_MyAppState`). Guarda el equipo del jugador en una lista `_equipo` y expone `_agregarAlEquipo` / `_quitarDelEquipo`. Envuelve todo el `MaterialApp` con `AppTeamScope`, de modo que cualquier pantalla descendiente puede leer o modificar el equipo sin pasarlo por constructor.
+
+### `screens/home_screen.dart`
+
+Dashboard principal (`StatelessWidget`). Muestra el logotipo (`assets/images/pokedex_logo.png`), el nombre de la app y una cuadrícula (`GridView.count`) de 4 `CardButton`:
+
+- **Regiones** → navega a `ChoosePokemonScreen`.
+- **Mi Equipo** → navega a `TeamScreen`.
+- **Medallas** y **Batallas** → todavía no implementadas; muestran un `AlertDialog` ("estará disponible en una próxima actualización") mediante `_mostrarProximamente`.
+
+### `screens/choose_pokemon_screen.dart`
+
+`StatefulWidget` con dos vistas internas controladas por `_regionSeleccionada`:
+
+1. **Selección de región**: `GridView.builder` con un `CardButton` por región (Kanto, Johto, Hoenn, Sinnoh, Unova, Kalos), mapeadas a su ID de generación en PokéAPI.
+2. **Listado de iniciales**: al elegir una región, llama a `PokemonService.obtenerInicialesPorRegion()` y muestra los 3 iniciales en un `ListView.builder` con `Card` + `ListTile` (avatar, nombre, tipos). Cada `ListTile` navega a `PokemonDetailScreen`. Incluye un botón "Cambiar de Región" para volver a la vista 1.
+
+### `screens/pokemon_detail_screen.dart`
+
+`StatelessWidget` que recibe un `PokemonModel`. Muestra imagen, chips de tipo (`PokemonTypeChip`), barras de estadísticas (HP, Ataque, Defensa) y la descripción obtenida de `PokemonService.obtenerDescripcion()`. 
+
+Novedad de esta etapa: se conecta a `AppTeamScope` para saber si el Pokémon ya está en el equipo (`estaEnEquipo`) y ofrece un botón que **agrega o quita** al Pokémon del equipo:
+- Si el equipo ya tiene 6 integrantes, muestra un `AlertDialog` de advertencia.
+- Si la acción se completa, muestra un `SnackBar` de confirmación.
+
+### `screens/pokemon_catalog_screen.dart`
+
+Pantalla del tab "Buscar". Carga un pool de hasta 30 Pokémon (`obtenerPoolPokemon`) y la lista de tipos disponibles (`obtenerTiposDisponibles`) en paralelo con `Future.wait`. Usa `AppSearchBar` para agregar/quitar filtros (`PokemonFilter`) por nombre, tipo primario o tipo secundario, y filtra la lista localmente (`_coincideConFiltros`). Los resultados se muestran en un `GridView.builder` de `PokemonCard`, cada una navega a `PokemonDetailScreen`. Tiene un `FloatingActionButton` para recargar el catálogo.
+
+### `screens/team_screen.dart`
+
+Muestra el equipo actual (`AppTeamScope.of(context).equipo`) en un `ListView.separated` con `Divider` entre elementos. Cada fila es un `ListTile` con `CircleAvatar`, nombre, tipos y un `IconButton` para quitar al Pokémon (pide confirmación con `AlertDialog` mediante la función `confirmarQuitarDelEquipo`, y muestra un `SnackBar` al completar la acción). Tocar la fila navega al detalle.
+
+### `screens/main_navigation_screen.dart`
+
+Contenedor de navegación inferior. Usa `IndexedStack` (en vez de reemplazar el widget del body) para mantener vivo el estado de `HomeScreen` y `PokemonCatalogScreen` al cambiar de pestaña. El índice seleccionado se controla con `setState` en `_cambiarPantalla`.
+
+### `screens/pokemon_search_screen.dart` + `states/Pokemon_search_state.dart`
+
+`PokemonSearchScreen<T>` es un widget de búsqueda genérico y reutilizable: recibe una lista de elementos (`elementos`), una función para extraer el valor a comparar (`valorABuscar`) y un callback (`listadoCambiado`) que se dispara con la lista filtrada. Su `State` (`PokemonSearchState<T>`) contiene el `TextField` con ícono de limpiar y aplica el filtro en cada `onChanged`.
+
+### `states/app_team_scope.dart`
+
+`InheritedWidget` que expone el equipo del jugador a toda la app sin necesidad de pasar el estado manualmente entre pantallas (evita el "prop drilling"). Define:
+
+- `capacidadMaxima = 6`.
+- `equipo`: lista inmutable del equipo actual.
+- `agregarAlEquipo` / `quitarDelEquipo`: callbacks que delegan en el estado de `MyApp`.
+- `estaEnEquipo(pokemon)`: helper para saber si un Pokémon ya fue agregado.
+- `AppTeamScope.of(context)`: acceso estático desde cualquier widget descendiente.
+
+### `helpers/color_helper.dart`
+
+`ColorHelper.colorPorTipo(tipo)` mapea el tipo de Pokémon (fuego, agua, planta, etc.) a un `Color` de Material, usado para pintar chips, barras de estadísticas y avatares. Si el tipo no está en el mapa, devuelve `Colors.teal` por defecto.
+
+### `helpers/http_helper.dart`
+
+Envuelve el paquete `http` con manejo de errores centralizado:
+
+- `hasInternetConnection()`: usa `connectivity_plus` para detectar si hay red; en Web omite la verificación de DNS porque el navegador ya la gestiona.
+- `get(url)`: lanza `NetworkException` si no hay conexión, agrega timeout de 10 segundos y traduce los códigos de estado HTTP (400, 401/403, 404, 500) a `ApiException` mediante `_processResponse`.
+
+### `exception/api_exception.dart`
+
+Define las dos excepciones personalizadas que usa el resto de la app:
+
+- `NetworkException`: errores de conectividad.
+- `ApiException`: errores devueltos por la API, con `codigoEstado` opcional.
+
+### `models/pokemon_filter.dart`
+
+- `PokemonKeyFilter` (enum): `nombre`, `tipoPrimario`, `tipoSecundario`, con una extensión `etiqueta` para mostrar el texto en español en el dropdown.
+- `PokemonFilter`: value object inmutable (`key` + `value`) con `==`/`hashCode` sobreescritos para poder compararlos y evitar filtros duplicados.
+
+### `components/card_button.dart`
+
+Botón reutilizable en forma de tarjeta (`Card` + `InkWell`), usado en el dashboard de inicio y en la selección de regiones. Acepta un ícono opcional y cualquier `child`, ambos envueltos en `FittedBox` para evitar overflow si el contenido no cabe.
+
+### `components/app_search_bar.dart`
+
+Barra de filtros reutilizada por `PokemonCatalogScreen`. Permite elegir la clave de búsqueda (nombre / tipo primario / tipo secundario) y, según el caso, escribir un valor o elegir un tipo desde un segundo dropdown. Los filtros activos se muestran como `InputChip` removibles.
 
 ## Widgets utilizados en esta etapa
 
@@ -733,13 +824,29 @@ Otros usos de `setState()`:
 
 Las evidencias de la Actividad Integradora 1 permanecen en `docs/`.
 
-Para esta etapa, las pantallas principales a capturar en el emulador son:
+### Inicio
 
-- Inicio con logotipo.
-- Catálogo / búsqueda.
-- Regiones.
-- Detalle de un Pokémon.
-- Mi equipo (con al menos un integrante).
+![Rediseño del menú principal](docs/08_rediseno_menu_principal.png)
+
+### Regiones
+
+![Submenú de regiones](docs/09_submenu_regiones.png)
+
+### Pokémon por región
+
+![Vista inicial de Pokémon por región](docs/10_vista_inicial_pokemon_por_region.png)
+
+### Detalle de Pokémon
+
+![Detalle con opción de agregar al equipo](docs/11_vista_detalle_pokemon_opcion_agregar_equipo.png)
+
+### Mi equipo
+
+![Vista de Mi equipo](docs/12_vista_mi_equipo.png)
+
+### Búsqueda con filtros
+
+![Búsqueda con filtros aplicados](docs/13_vista_busqueda_con_filtros.png)
 
 ## Cómo ejecutar el proyecto
 
