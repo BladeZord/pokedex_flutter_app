@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/screens/main_navigation_screen.dart';
-import 'screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
