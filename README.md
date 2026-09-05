@@ -813,6 +813,7 @@ Otros usos de `setState()`:
 | `http`              | Solicitudes a PokéAPI.                                           |
 | `connectivity_plus` | Comprobar conexión antes de consultar la API (`HttpHelper`).     |
 | `google_fonts`      | Tipografía Poppins en constantes y componentes (`AppConstants`). |
+| `provider`          | Manejo de estado del equipo del jugador (`TeamProvider`).        |
 
 
 ## Personalización
