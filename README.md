@@ -659,6 +659,8 @@ lib/
 ├── models/
 │   ├── pokemon_filter.dart
 │   └── pokemon_model.dart
+├── providers/
+│   └── team_provider.dart
 ├── screens/
 │   ├── choose_pokemon_screen.dart
 │   ├── home_screen.dart
@@ -670,7 +672,7 @@ lib/
 ├── services/
 │   └── pokemon_service.dart
 └── states/
-    ├── app_team_scope.dart
+    ├── app_team_scope.dart # este se deja de usar pero no se elimina para puse referencial
     └── Pokemon_search_state.dart
 ```
 
