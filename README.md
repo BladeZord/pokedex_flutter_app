@@ -848,6 +848,18 @@ Las evidencias de la Actividad Integradora 1 permanecen en `docs/`.
 
 ![Búsqueda con filtros aplicados](docs/13_vista_busqueda_con_filtros.png)
 
+### Agregar Pokémon al equipo desde el detalle
+
+![Agregar al equipo con Provider](docs/14_agregar_pokemon_equipo_provider.png)
+
+### Mi equipo reflejando el cambio en tiempo real
+
+![Equipo actualizado en vivo](docs/15_equipo_actualizado_provider.png)
+
+### Quitar Pokémon del equipo
+
+![Quitar del equipo](docs/16_quitar_pokemon_equipo_provider.png)
+
 ## Cómo ejecutar el proyecto
 
 ```bash
@@ -858,5 +870,3 @@ flutter run
 ```
 
 La aplicación está pensada para ejecutarse en un **emulador Android**. También puede probarse en Chrome u otras plataformas soportadas por Flutter.
-
-Se recomienda un historial de **al menos 10 commits** en el repositorio (este proyecto ya supera ese mínimo con el historial acumulado de ambas actividades).
