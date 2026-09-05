@@ -659,8 +659,6 @@ lib/
 ├── models/
 │   ├── pokemon_filter.dart
 │   └── pokemon_model.dart
-├── providers/
-│   └── team_provider.dart
 ├── screens/
 │   ├── choose_pokemon_screen.dart
 │   ├── home_screen.dart
@@ -672,7 +670,7 @@ lib/
 ├── services/
 │   └── pokemon_service.dart
 └── states/
-    ├── app_team_scope.dart # este se deja de usar pero no se elimina para puse referencial
+    ├── app_team_scope.dart
     └── Pokemon_search_state.dart
 ```
 
@@ -813,7 +811,6 @@ Otros usos de `setState()`:
 | `http`              | Solicitudes a PokéAPI.                                           |
 | `connectivity_plus` | Comprobar conexión antes de consultar la API (`HttpHelper`).     |
 | `google_fonts`      | Tipografía Poppins en constantes y componentes (`AppConstants`). |
-| `provider`          | Manejo de estado del equipo del jugador (`TeamProvider`).        |
 
 
 ## Personalización
@@ -851,17 +848,127 @@ Las evidencias de la Actividad Integradora 1 permanecen en `docs/`.
 
 ![Búsqueda con filtros aplicados](docs/13_vista_busqueda_con_filtros.png)
 
-### Agregar Pokémon al equipo desde el detalle
+## Cómo ejecutar el proyecto
 
-![Agregar al equipo con Provider](docs/14_agregar_pokemon_equipo_provider.png)
+```bash
+cd pokedex_flutter_app
+flutter pub get
+flutter devices
+flutter run
+```
 
-### Mi equipo reflejando el cambio en tiempo real
+La aplicación está pensada para ejecutarse en un **emulador Android**. También puede probarse en Chrome u otras plataformas soportadas por Flutter.
 
-![Equipo actualizado en vivo](docs/15_equipo_actualizado_provider.png)
+---
 
-### Quitar Pokémon del equipo
+# Actividad Integradora 3
 
-![Quitar del equipo](docs/16_quitar_pokemon_equipo_provider.png)
+## Continuación de la aplicación
+
+Se **continuó la misma aplicación** de las Actividades Integradoras 1 y 2 (Pokédex). Sobre la base ya existente, el foco de esta etapa fue migrar el manejo del estado del equipo de un `InheritedWidget` manual a **Provider**, cumpliendo con el objetivo de aplicar `ChangeNotifier`, `notifyListeners()`, `ChangeNotifierProvider` y `Consumer`.
+
+## Descripción breve
+
+**Mi Pokédex Favorita** mantiene todas sus funcionalidades (catálogo, filtros, regiones, detalle, equipo), pero ahora el equipo del jugador se administra mediante un `TeamProvider` (`ChangeNotifier`) en vez de un `InheritedWidget` (`AppTeamScope`) combinado con `setState()` en `main.dart`. El cambio es puramente de arquitectura: la experiencia visible para el usuario es la misma, pero el manejo de estado es ahora escalable y desacoplado del árbol de widgets.
+
+## Nuevas funcionalidades / cambios de esta etapa
+
+- Instalación del paquete **`provider`**.
+- Creación de `TeamProvider extends ChangeNotifier` (`lib/providers/team_provider.dart`), que reemplaza la lógica que antes vivía en `_MyAppState` + `AppTeamScope`.
+- `main.dart` ya no es `StatefulWidget`: ahora es `StatelessWidget` envuelto en `ChangeNotifierProvider` en la raíz de la app.
+- `pokemon_detail_screen.dart` y `team_screen.dart` ahora leen el equipo con `context.watch<TeamProvider>()` / `Consumer<TeamProvider>`, y modifican el equipo con `context.read<TeamProvider>()`.
+- El cambio se refleja automáticamente entre pantallas: agregar un Pokémon desde el detalle actualiza en vivo la pantalla "Mi equipo", y quitarlo desde "Mi equipo" actualiza en vivo el botón del detalle.
+
+## Explicación del Provider implementado
+
+`TeamProvider` administra el equipo del jugador (máximo 6 Pokémon), que es la funcionalidad central de la app:
+
+```dart
+class TeamProvider extends ChangeNotifier {
+  static const int capacidadMaxima = 6;
+  final List<PokemonModel> _equipo = [];
+
+  List<PokemonModel> get equipo => List.unmodifiable(_equipo);
+
+  bool estaEnEquipo(PokemonModel pokemon) =>
+      _equipo.any((miembro) => miembro.id == pokemon.id);
+
+  bool agregarAlEquipo(PokemonModel pokemon) {
+    if (estaEnEquipo(pokemon) || _equipo.length >= capacidadMaxima) return false;
+    _equipo.add(pokemon);
+    notifyListeners();
+    return true;
+  }
+
+  void quitarDelEquipo(PokemonModel pokemon) {
+    _equipo.removeWhere((miembro) => miembro.id == pokemon.id);
+    notifyListeners();
+  }
+}
+```
+
+- Se registra en la raíz de la app con `ChangeNotifierProvider(create: (_) => TeamProvider(), child: const MyApp())` en `main.dart`.
+- `pokemon_detail_screen.dart` usa `context.watch<TeamProvider>()` para reconstruirse cuando cambia el equipo (el botón cambia entre "Agregar al equipo" / "Quitar del equipo").
+- `team_screen.dart` envuelve toda la pantalla en un `Consumer<TeamProvider>` para redibujar la lista automáticamente ante cualquier alta o baja.
+- Las acciones (`agregarAlEquipo`, `quitarDelEquipo`) se disparan con `context.read<TeamProvider>()` dentro de callbacks (`onPressed`), sin necesidad de escuchar cambios en ese punto.
+
+## Widgets reutilizables
+
+No se agregaron widgets nuevos en esta etapa: la app ya contaba con los mínimos requeridos desde la Actividad Integradora 2 (`PokemonCard`, `PokemonTypeChip`, `CardButton`, `AppLoading`, `AppSearchBar`), todos en `lib/components/`, cada uno en su propio archivo y reutilizados en múltiples pantallas.
+
+## Estructura actual de `lib/`
+
+```text
+lib/
+├── main.dart
+├── components/
+│   ├── app_loading.dart
+│   ├── app_search_bar.dart
+│   ├── card_button.dart
+│   ├── pokemon_card.dart
+│   └── pokemon_type_chip.dart
+├── constants/
+│   └── app_constants.dart
+├── exception/
+│   └── api_exception.dart
+├── helpers/
+│   ├── color_helper.dart
+│   └── http_helper.dart
+├── models/
+│   ├── pokemon_filter.dart
+│   └── pokemon_model.dart
+├── providers/
+│   └── team_provider.dart          # NUEVO
+├── screens/
+│   ├── choose_pokemon_screen.dart
+│   ├── home_screen.dart
+│   ├── main_navigation_screen.dart
+│   ├── pokemon_catalog_screen.dart
+│   ├── pokemon_detail_screen.dart
+│   ├── pokemon_search_screen.dart
+│   └── team_screen.dart
+├── services/
+│   └── pokemon_service.dart
+└── states/
+    ├── app_team_scope.dart          # ya no se usa, se conserva como referencia
+    └── Pokemon_search_state.dart
+```
+
+## Paquetes externos (actualizado)
+
+| Paquete             | Uso                                                                   |
+| ------------------- | ---------------------------------------------------------------------- |
+| `http`              | Solicitudes a PokéAPI.                                                  |
+| `connectivity_plus` | Comprobar conexión antes de consultar la API (`HttpHelper`).            |
+| `google_fonts`      | Tipografía Poppins en constantes y componentes (`AppConstants`).        |
+| `provider`          | Manejo de estado del equipo del jugador (`TeamProvider`).               |
+
+## Capturas
+
+| Agregar al equipo | Equipo actualizado en vivo | Quitar del equipo |
+| --- | --- | --- |
+| ![Agregar al equipo con Provider](docs/14_agregar_pokemon_equipo_provider.png) | ![Equipo actualizado en vivo](docs/15_equipo_actualizado_provider.png) | ![Quitar del equipo](docs/16_quitar_pokemon_equipo_provider.png) |
+| Se agrega el Pokémon desde el detalle mediante `teamProvider.agregarAlEquipo()`. | `Consumer<TeamProvider>` redibuja "Mi equipo" automáticamente. | Se quita con `context.read<TeamProvider>().quitarDelEquipo()`. |
 
 ## Cómo ejecutar el proyecto
 
