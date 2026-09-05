@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/constants/app_constants.dart';
 import 'package:pokedex_flutter_app/helpers/color_helper.dart';
-import 'package:pokedex_flutter_app/states/app_team_scope.dart';
+import 'package:pokedex_flutter_app/providers/team_provider.dart';
+import 'package:provider/provider.dart';
+// import 'package:pokedex_flutter_app/states/app_team_scope.dart';
 import '../components/pokemon_type_chip.dart';
 import '../models/pokemon_model.dart';
 import '../services/pokemon_service.dart';
@@ -15,9 +17,9 @@ class PokemonDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorPrincipal = ColorHelper.colorPorTipo(pokemon.types.first);
-    final teamScope = AppTeamScope.of(context);
-    final enEquipo = teamScope.estaEnEquipo(pokemon);
-
+    // final teamProvider = AppTeamScope.of(context);
+    final teamProvider = context.watch<TeamProvider>();
+    final enEquipo = teamProvider.estaEnEquipo(pokemon); 
     return Scaffold(
       appBar: AppBar(
         title: Text(pokemon.name.toUpperCase()),
@@ -92,7 +94,7 @@ class PokemonDetailScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         if (enEquipo) {
-                          teamScope.quitarDelEquipo(pokemon);
+                          teamProvider.quitarDelEquipo(pokemon);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('${pokemon.name} fue retirado del equipo.'),
@@ -101,7 +103,7 @@ class PokemonDetailScreen extends StatelessWidget {
                           return;
                         }
 
-                        if (teamScope.equipo.length >= AppTeamScope.capacidadMaxima) {
+                        if (teamProvider.equipo.length >= TeamProvider.capacidadMaxima) {
                           showDialog<void>(
                             context: context,
                             builder: (dialogContext) {
@@ -122,7 +124,7 @@ class PokemonDetailScreen extends StatelessWidget {
                           return;
                         }
 
-                        teamScope.agregarAlEquipo(pokemon);
+                        teamProvider.agregarAlEquipo(pokemon);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('${pokemon.name} se unió a tu equipo.'),
